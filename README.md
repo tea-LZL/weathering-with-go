@@ -197,14 +197,6 @@ All errors follow a consistent format:
 }
 ```
 
-**Common Error Codes:**
-- `400`: Bad Request - Invalid parameters
-- `401`: Unauthorized - Invalid API key
-- `404`: Not Found - Location not found
-- `429`: Too Many Requests - Rate limit exceeded
-- `500`: Internal Server Error - Server error
-- `503`: Service Unavailable - External API unavailable
-
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -277,14 +269,6 @@ docker run -p 8080:8080 -e OPENWEATHERMAP_API_KEY=your_key weathering-with-go
 - **Forecast**: Up to 5 days (OpenWeatherMap limitation)
 - **Rate Limiting**: Built-in protection to prevent API abuse
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -294,14 +278,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [OpenWeatherMap](https://openweathermap.org/) for providing the weather data API
 - [Gin Framework](https://gin-gonic.com/) for the excellent HTTP web framework
 - [Go Community](https://golang.org/) for the amazing programming language
-
-## 📞 Support
-
-If you have any questions or need help, please:
-1. Check the [issues](https://github.com/tea-LZL/weathering-with-go/issues) for existing solutions
-2. Create a new issue with detailed information
-3. Contact the maintainers
-
----
-
-**Happy weather forecasting!** 🌈
