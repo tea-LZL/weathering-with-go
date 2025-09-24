@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	OpenWeatherMapBaseURL     = "https://api.openweathermap.org/data/2.5"
-	CurrentWeatherEndpoint    = "/weather"
-	ForecastEndpoint         = "/forecast"
-	DefaultUnits             = "metric"
-	DefaultTimeout           = 10 * time.Second
+	OpenWeatherMapBaseURL  = "https://api.openweathermap.org/data/2.5"
+	CurrentWeatherEndpoint = "/weather"
+	ForecastEndpoint       = "/forecast"
+	DefaultUnits           = "metric"
+	DefaultTimeout         = 10 * time.Second
 )
 
 // WeatherService handles weather data operations
@@ -37,7 +37,7 @@ func NewWeatherService(apiKey string) *WeatherService {
 }
 
 // GetCurrentWeather fetches current weather data for a given location
-func (w *WeatherService) GetCurrentWeather(location, units string) (*models.WeatherData, error) {
+func (w *WeatherService) GetCurrentWeather(location, units string, apikey string) (*models.WeatherData, error) {
 	if location == "" {
 		return nil, fmt.Errorf("location cannot be empty")
 	}
@@ -50,7 +50,11 @@ func (w *WeatherService) GetCurrentWeather(location, units string) (*models.Weat
 	endpoint := fmt.Sprintf("%s%s", OpenWeatherMapBaseURL, CurrentWeatherEndpoint)
 	params := url.Values{}
 	params.Add("q", location)
-	params.Add("appid", w.APIKey)
+	if apikey == "" {
+		params.Add("appid", w.APIKey)
+	} else {
+		params.Add("appid", apikey)
+	}
 	params.Add("units", units)
 
 	fullURL := fmt.Sprintf("%s?%s", endpoint, params.Encode())
@@ -164,7 +168,7 @@ func (w *WeatherService) convertCurrentWeatherResponse(owm models.OpenWeatherMap
 func (w *WeatherService) convertForecastResponse(owm models.OpenWeatherMapForecastResponse, days int) *models.WeatherData {
 	// Group forecast items by date
 	forecastMap := make(map[string][]models.ForecastItem)
-	
+
 	for _, item := range owm.List {
 		date := time.Unix(item.Dt, 0).Format("2006-01-02")
 		forecastMap[date] = append(forecastMap[date], item)
@@ -173,12 +177,12 @@ func (w *WeatherService) convertForecastResponse(owm models.OpenWeatherMapForeca
 	// Convert to daily forecasts
 	var forecasts []models.Forecast
 	count := 0
-	
+
 	for date, items := range forecastMap {
 		if count >= days {
 			break
 		}
-		
+
 		// Calculate daily averages/extremes
 		forecast := w.calculateDailyForecast(date, items)
 		forecasts = append(forecasts, forecast)
@@ -200,7 +204,7 @@ func (w *WeatherService) convertForecastResponse(owm models.OpenWeatherMapForeca
 // calculateDailyForecast calculates daily forecast from 3-hour intervals
 func (w *WeatherService) calculateDailyForecast(dateStr string, items []models.ForecastItem) models.Forecast {
 	date, _ := time.Parse("2006-01-02", dateStr)
-	
+
 	if len(items) == 0 {
 		return models.Forecast{Date: date}
 	}
@@ -220,11 +224,11 @@ func (w *WeatherService) calculateDailyForecast(dateStr string, items []models.F
 		if item.Main.TempMax > maxTemp {
 			maxTemp = item.Main.TempMax
 		}
-		
+
 		totalTemp += item.Main.Temp
 		totalHumidity += float64(item.Main.Humidity)
 		totalWind += item.Wind.Speed
-		
+
 		if item.Rain.ThreeHour > 0 {
 			precipitation += item.Rain.ThreeHour
 		}
@@ -244,15 +248,15 @@ func (w *WeatherService) calculateDailyForecast(dateStr string, items []models.F
 	avgTemp = totalTemp / count
 
 	return models.Forecast{
-		Date:         date,
-		MaxTemp:      maxTemp,
-		MinTemp:      minTemp,
-		AvgTemp:      avgTemp,
-		Condition:    condition,
-		Description:  strings.Title(description),
-		Icon:         icon,
-		Humidity:     int(totalHumidity / count),
-		WindSpeed:    totalWind / count,
+		Date:          date,
+		MaxTemp:       maxTemp,
+		MinTemp:       minTemp,
+		AvgTemp:       avgTemp,
+		Condition:     condition,
+		Description:   strings.Title(description),
+		Icon:          icon,
+		Humidity:      int(totalHumidity / count),
+		WindSpeed:     totalWind / count,
 		Precipitation: precipitation,
 	}
 }

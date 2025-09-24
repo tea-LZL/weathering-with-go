@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"weathering-with-go/models"
 	"weathering-with-go/services"
 	"weathering-with-go/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 // WeatherHandler handles weather-related HTTP requests
@@ -36,7 +37,9 @@ func (h *WeatherHandler) GetCurrentWeather(c *gin.Context) {
 		return
 	}
 
-	weatherData, err := h.weatherService.GetCurrentWeather(location, units)
+	apikey := c.DefaultQuery("key", "")
+
+	weatherData, err := h.weatherService.GetCurrentWeather(location, units, apikey)
 	if err != nil {
 		utils.SendError(c, utils.HandleWeatherAPIError(err))
 		return
@@ -103,7 +106,9 @@ func (h *WeatherHandler) PostCurrentWeather(c *gin.Context) {
 		return
 	}
 
-	weatherData, err := h.weatherService.GetCurrentWeather(req.Location, units)
+	keys := req.Keys
+
+	weatherData, err := h.weatherService.GetCurrentWeather(req.Location, units, keys)
 	if err != nil {
 		utils.SendError(c, utils.HandleWeatherAPIError(err))
 		return
