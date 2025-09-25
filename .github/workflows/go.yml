@@ -31,7 +31,15 @@ jobs:
       env:
         OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
       run: |
-        go build -v -ldflags "-X 'weathering-with-go/config.BuildTimeAPIKey=${{ secrets.OPENWEATHERMAP_API_KEY }}'" -o weathering-with-go .
+        echo "API Key length: ${#OPENWEATHERMAP_API_KEY}"
+        echo "API Key content (with quotes): '$OPENWEATHERMAP_API_KEY'"
+        if [ -n "$OPENWEATHERMAP_API_KEY" ]; then
+          echo "API Key is set (first 4 chars: ${OPENWEATHERMAP_API_KEY:0:4}...)"
+        else
+          echo "API Key is NOT set or empty"
+        fi
+        echo "Building with ldflags..."
+        go build -v -ldflags "-X 'weathering-with-go/config.BuildTimeAPIKey=$OPENWEATHERMAP_API_KEY'" -o weathering-with-go .
         chmod +x weathering-with-go
 
     - name: Test
@@ -42,4 +50,4 @@ jobs:
       with:
         name: weathering-with-go-binary
         path: weathering-with-go
-        retention-days: 30
+        retention-days: 7

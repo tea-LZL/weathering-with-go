@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"log"
 )
 
 // BuildTimeAPIKey can be set at build time using -ldflags
@@ -29,7 +30,7 @@ func Load() *Config {
 	if apiKey == "" && BuildTimeAPIKey != "" {
 		apiKey = BuildTimeAPIKey
 	}
-	
+	log.Print("====> current api key is: ["+ apiKey + "]")
 	return &Config{
 		// Server configuration
 		Port: getEnv("PORT", "8080"),
