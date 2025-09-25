@@ -6,17 +6,18 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
 	"weathering-with-go/config"
 	"weathering-with-go/handlers"
 	"weathering-with-go/middleware"
 	"weathering-with-go/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// Load configuration
 	cfg := config.Load()
-	
+
 	// Validate configuration
 	if err := cfg.Validate(); err != nil {
 		log.Fatalf("Configuration error: %v", err)
@@ -25,7 +26,6 @@ func main() {
 	// Set gin mode based on environment
 	if cfg.IsProduction() {
 		log.Println("Running in production mode")
-
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -45,7 +45,7 @@ func main() {
 	log.Printf("Starting server on %s", cfg.GetServerAddress())
 	log.Printf("Environment: %s", cfg.Environment)
 	log.Printf("Log Level: %s", cfg.LogLevel)
-	
+
 	// Graceful shutdown setup
 	go func() {
 		if err := router.Run(cfg.GetServerAddress()); err != nil {
@@ -57,7 +57,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	
+
 	log.Println("Shutting down server...")
 	log.Println("Server stopped")
 }
@@ -66,7 +66,7 @@ func main() {
 func setupMiddleware(router *gin.Engine, cfg *config.Config) {
 	// Security headers
 	router.Use(middleware.Security())
-	
+
 	// CORS middleware
 	router.Use(middleware.CORS())
 

@@ -1,23 +1,24 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
-	"log"
 )
 
 // BuildTimeAPIKey can be set at build time using -ldflags
 var BuildTimeAPIKey string
+var Environment string
 
 // Config holds all configuration for the application
 type Config struct {
 	// Server configuration
 	Port string
 	Host string
-	
+
 	// API configuration
 	OpenWeatherMapAPIKey string
-	
+
 	// Application configuration
 	Environment string // development, production, testing
 	LogLevel    string // debug, info, warn, error
@@ -30,15 +31,19 @@ func Load() *Config {
 	if apiKey == "" && BuildTimeAPIKey != "" {
 		apiKey = BuildTimeAPIKey
 	}
-	log.Print("====> current api key is: ["+ apiKey + "]")
+	log.Print("====> current api key is: [" + apiKey + "]")
+
+	if Environment == "" {
+		Environment = getEnv("ENVIRONMENT", "development")
+	}
 	return &Config{
 		// Server configuration
 		Port: getEnv("PORT", "8080"),
 		Host: getEnv("HOST", "0.0.0.0"),
-		
+
 		// API configuration
 		OpenWeatherMapAPIKey: apiKey,
-		
+
 		// Application configuration
 		Environment: getEnv("ENVIRONMENT", "development"),
 		LogLevel:    getEnv("LOG_LEVEL", "info"),
@@ -53,7 +58,7 @@ func (c *Config) Validate() error {
 			Message: "OpenWeatherMap API key is required. Get one at https://openweathermap.org/api",
 		}
 	}
-	
+
 	return nil
 }
 
