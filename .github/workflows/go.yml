@@ -21,11 +21,23 @@ jobs:
       with:
         go-version: '1.25.1'
 
-    # - name: Install dependencies
-    #   run: go mod download
+    - name: Install dependencies
+      run: go mod download
 
-    - name: Build
-      run: go build -v ./...
+    - name: Verify dependencies
+      run: go mod verify
+
+    - name: Build binary
+      run: |
+        go build -v -o weathering-with-go .
+        chmod +x weathering-with-go
 
     - name: Test
       run: go test -v ./...
+
+    - name: Upload binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: weathering-with-go-binary
+        path: weathering-with-go
+        retention-days: 30
