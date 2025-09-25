@@ -5,6 +5,9 @@ import (
 	"strconv"
 )
 
+// BuildTimeAPIKey can be set at build time using -ldflags
+var BuildTimeAPIKey string
+
 // Config holds all configuration for the application
 type Config struct {
 	// Server configuration
@@ -21,13 +24,19 @@ type Config struct {
 
 // Load loads configuration from environment variables with defaults
 func Load() *Config {
+	apiKey := getEnv("OPENWEATHERMAP_API_KEY", "")
+	// If no runtime API key is found, use build-time API key
+	if apiKey == "" && BuildTimeAPIKey != "" {
+		apiKey = BuildTimeAPIKey
+	}
+	
 	return &Config{
 		// Server configuration
 		Port: getEnv("PORT", "8080"),
 		Host: getEnv("HOST", "0.0.0.0"),
 		
 		// API configuration
-		OpenWeatherMapAPIKey: getEnv("OPENWEATHERMAP_API_KEY", ""),
+		OpenWeatherMapAPIKey: apiKey,
 		
 		// Application configuration
 		Environment: getEnv("ENVIRONMENT", "development"),

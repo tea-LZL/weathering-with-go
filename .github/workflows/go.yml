@@ -31,7 +31,7 @@ jobs:
       env:
         OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
       run: |
-        go build -v -o weathering-with-go .
+        go build -v -ldflags "-X 'weathering-with-go/config.BuildTimeAPIKey=${{ secrets.OPENWEATHERMAP_API_KEY }}'" -o weathering-with-go .
         chmod +x weathering-with-go
 
     - name: Test
