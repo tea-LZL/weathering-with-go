@@ -45,7 +45,7 @@ func Load() *Config {
 		OpenWeatherMapAPIKey: apiKey,
 
 		// Application configuration
-		Environment: getEnv("ENVIRONMENT", "development"),
+		Environment: Environment,
 		LogLevel:    getEnv("LOG_LEVEL", "info"),
 	}
 }
