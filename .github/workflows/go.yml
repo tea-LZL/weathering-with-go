@@ -28,6 +28,8 @@ jobs:
       run: go mod verify
 
     - name: Build binary
+      env:
+        OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
       run: |
         go build -v -o weathering-with-go .
         chmod +x weathering-with-go
