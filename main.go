@@ -24,6 +24,8 @@ func main() {
 
 	// Set gin mode based on environment
 	if cfg.IsProduction() {
+		log.Println("Running in production mode")
+
 		gin.SetMode(gin.ReleaseMode)
 	}
 
