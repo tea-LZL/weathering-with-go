@@ -8,7 +8,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+permissions:
+  contents: write
 jobs:
 
   build:
@@ -44,3 +45,22 @@ jobs:
         name: weathering-with-go-binary
         path: weathering-with-go
         retention-days: 7
+
+  create-release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: artifacts/**/*.zip
+        generate_release_notes: true
+        draft: false
+        prerelease: false
