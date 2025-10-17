@@ -45,9 +45,7 @@ ENV PORT=8080
 # Expose port (Cloud Run ignores this but it's good for documentation)
 EXPOSE 8080
 
-# Health check endpoint (optional but recommended for Cloud Run)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
+# Remove HEALTHCHECK as distroless doesn't have wget and Cloud Run handles health checks
 
 # Run the application
 CMD ["/app/main"]

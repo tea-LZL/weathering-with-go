@@ -2,9 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"weathering-with-go/config"
 	"weathering-with-go/handlers"
@@ -46,20 +43,10 @@ func main() {
 	log.Printf("Environment: %s", cfg.Environment)
 	log.Printf("Log Level: %s", cfg.LogLevel)
 
-	// Graceful shutdown setup
-	go func() {
-		if err := router.Run(cfg.GetServerAddress()); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
-		}
-	}()
-
-	// Wait for interrupt signal to gracefully shutdown the server
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Println("Shutting down server...")
-	log.Println("Server stopped")
+	// Start the server (blocking call)
+	if err := router.Run(cfg.GetServerAddress()); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
 
 // setupMiddleware configures middleware for the gin router
